@@ -1,0 +1,8 @@
+{
+  "name": "remix33 LocalShare",
+  "description": "Share selected files and folders over local Wi-Fi with an embedded HTTP server and web browser client",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

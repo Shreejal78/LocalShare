@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocalShare — Local Network File Browser</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            <path d="M12 11v6m-3-3l3-3 3 3" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>LocalShare</h1>
+          <div class="header-badges">
+            <span class="badge online" id="connectionBadge">Local Network Active</span>
+            <span class="badge status-live" id="liveStatusBadge" title="Real-time synchronization status">
+              <span class="status-dot"></span>
+              <span id="liveStatusText">Live / Connected</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btnZipAll" class="btn btn-secondary" title="Download visible items as ZIP">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span class="zip-btn-text">Download All<span class="zip-ext"> (.zip)</span></span>
+        </button>
+        <button id="btnThemeToggle" class="btn btn-icon theme-toggle-btn" title="Toggle theme" aria-label="Toggle theme">
+          <svg id="themeIcon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- Toolbar: Search, Breadcrumbs, Sort, View toggle -->
+    <section class="toolbar-section">
+      <div class="breadcrumbs-bar" id="breadcrumbsContainer">
+        <!-- Injected via app.js -->
+      </div>
+
+      <div class="controls-bar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search shared files..." autocomplete="off">
+          <button id="btnClearSearch" class="btn-clear hidden" aria-label="Clear search">&times;</button>
+        </div>
+
+        <div class="filter-actions">
+          <div class="select-wrapper">
+            <select id="sortSelect" aria-label="Sort files">
+              <option value="name_asc">Name (A-Z)</option>
+              <option value="name_desc">Name (Z-A)</option>
+              <option value="size_desc">Size (Largest first)</option>
+              <option value="size_asc">Size (Smallest first)</option>
+              <option value="date_desc">Modified (Newest)</option>
+              <option value="date_asc">Modified (Oldest)</option>
+            </select>
+          </div>
+
+          <div class="view-toggle">
+            <button id="btnViewGrid" class="btn-toggle active" title="Grid view" aria-label="Grid view">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button id="btnViewList" class="btn-toggle" title="List view" aria-label="List view">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats & Info Bar -->
+    <section class="stats-bar">
+      <span id="itemsSummary">Loading shared items...</span>
+      <span id="networkNote">Served directly from Android host</span>
+    </section>
+
+    <!-- Content Grid / List -->
+    <section id="contentArea" class="content-area grid-view">
+      <!-- Loading Skeleton -->
+      <div id="loadingState" class="state-message">
+        <div class="spinner"></div>
+        <p>Connecting to LocalShare on host device...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="state-message hidden">
+        <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <h3>No files or folders shared yet</h3>
+        <p>The host user hasn't added files or this folder is empty.</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="state-message hidden">
+        <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h3 id="errorMessage">Unable to connect to LocalShare</h3>
+        <p>Ensure both devices remain on the same Wi-Fi network.</p>
+        <button id="btnRetry" class="btn btn-primary">Try Again</button>
+      </div>
+
+      <!-- Items Container -->
+      <div id="itemsContainer" class="items-container"></div>
+    </section>
+  </main>
+
+  <!-- Password Protected Dialog -->
+  <div id="authModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="lock-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h2>Password Required</h2>
+        <p>This LocalShare session is password-protected by the host.</p>
+      </div>
+      <form id="authForm" class="modal-form">
+        <div class="form-group">
+          <input type="password" id="passwordInput" placeholder="Enter share password" required autofocus>
+          <span id="authError" class="auth-error hidden">Incorrect password</span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Unlock Files</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal-overlay hidden">
+    <div class="preview-card">
+      <div class="preview-header modal-header">
+        <div class="preview-title-box modal-title-wrapper">
+          <span class="preview-icon" id="previewIcon"></span>
+          <div class="preview-title-meta">
+            <h3 id="previewTitle" class="preview-title modal-title">File Preview</h3>
+            <span id="previewMeta" class="preview-meta">0 KB</span>
+          </div>
+        </div>
+        <div class="preview-actions modal-actions">
+          <a id="btnDownloadPreview" class="btn btn-primary" download>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download</span>
+          </a>
+          <button id="btnClosePreview" class="btn btn-icon" aria-label="Close preview">&times;</button>
+        </div>
+      </div>
+      <div id="previewBody" class="preview-body">
+        <!-- Dynamic media viewer injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>LocalShare &bull; Peer-to-peer Wi-Fi file transfer &bull; No internet required</p>
+  </footer>
+
+  <!-- Toast Notifications Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
